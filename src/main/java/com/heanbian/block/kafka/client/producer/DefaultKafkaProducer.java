@@ -2,6 +2,7 @@ package com.heanbian.block.kafka.client.producer;
 
 import java.util.Objects;
 import java.util.Properties;
+import java.util.UUID;
 
 import javax.annotation.Resource;
 
@@ -27,15 +28,15 @@ public class DefaultKafkaProducer {
 	private KafkaProducer<String, byte[]> producer;
 
 	public <T> void send(String topic, T data) {
-		send(topic, JSON.toJSONString(data), JSON.toJSONBytes(data));
+		Objects.requireNonNull(topic, "topic must be set");
+		Objects.requireNonNull(data, "data must not be null");
+		send(topic, UUID.randomUUID().toString(), JSON.toJSONBytes(data));
 	}
 
 	private void send(String topic, String key, byte[] value) {
-		Objects.requireNonNull(topic, "topic must be set");
-		Objects.requireNonNull(key, "key must not be null");
-
 		producerProperties.put("bootstrap.servers", kafkaServers);
 		producer = new KafkaProducer<>(producerProperties);
+
 		ProducerRecord<String, byte[]> record = new ProducerRecord<>(topic, key, value);
 		producer.send(record, new Callback() {
 
