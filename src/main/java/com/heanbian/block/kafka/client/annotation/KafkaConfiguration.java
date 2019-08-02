@@ -1,6 +1,5 @@
 package com.heanbian.block.kafka.client.annotation;
 
-import java.util.Map;
 import java.util.Properties;
 
 import org.springframework.beans.factory.config.BeanDefinition;
@@ -15,33 +14,20 @@ import com.heanbian.block.kafka.client.producer.DefaultKafkaProducer;
 @Configuration
 public class KafkaConfiguration {
 
-	@SuppressWarnings("unchecked")
-	@Bean("producerProperties")
+	@Bean("com.heanbian.block.kafka.client.producer.ProducerProperties")
 	public Properties producerProperties() {
-		Map<String, Object> producerMap = (Map<String, Object>) loadKafkaConfig().get("producer");
-		Properties producer = new Properties();
-		producerMap.forEach((key, value) -> {
-			producer.put(key, value.toString());
-		});
-		return producer;
+		return (Properties) readKafkaConfig().get("producer");
 	}
 
-	@SuppressWarnings("unchecked")
-	@Bean("consumerProperties")
+	@Bean("com.heanbian.block.kafka.client.consumer.ConsumerProperties")
 	public Properties consumerProperties() {
-		Map<String, Object> consumerMap = (Map<String, Object>) loadKafkaConfig().get("consumer");
-		Properties consumer = new Properties();
-		consumerMap.forEach((key, value) -> {
-			consumer.put(key, value.toString());
-		});
-		return consumer;
+		return (Properties) readKafkaConfig().get("consumer");
 	}
 
-	@SuppressWarnings("unchecked")
-	private Map<String, Object> loadKafkaConfig() {
-		Map<String, Object> es_config = new Yaml()
-				.load(this.getClass().getClassLoader().getResourceAsStream("kafka-config.yml"));
-		return (Map<String, Object>) es_config.get("kafka");
+	private Properties readKafkaConfig() {
+		Yaml y = new Yaml();
+		Properties p = y.loadAs(getClass().getClassLoader().getResourceAsStream("kafka-config.yml"), Properties.class);
+		return (Properties) p.get("kafka");
 	}
 
 	@Bean("com.heanbian.block.kafka.client.annotation.KafkaListenerBeanPostProcessor")

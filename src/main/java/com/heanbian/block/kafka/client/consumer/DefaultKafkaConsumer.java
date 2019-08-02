@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.SynchronousQueue;
@@ -17,23 +18,24 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 
 import com.alibaba.fastjson.JSON;
 import com.heanbian.block.kafka.client.annotation.KafkaListener;
 
-public class DefaultKafkaConsumer {
+public class DefaultKafkaConsumer implements InitializingBean {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultKafkaConsumer.class);
 
 	@Value("${kafka.servers:}")
 	private String kafkaServers;
 
-	@Resource(name = "consumerProperties")
+	@Resource(name = "com.heanbian.block.kafka.client.consumer.ConsumerProperties")
 	private Properties consumerProperties;
 
 	@Async
-	public void joinAsync(Object bean, Method method, KafkaListener kafkaListener) {
+	public void consumeAsync(Object bean, Method method, KafkaListener kafkaListener) {
 		String[] topics = kafkaListener.topics();
 
 		if (topics == null || topics.length <= 0) {
@@ -47,18 +49,17 @@ public class DefaultKafkaConsumer {
 			throw new RuntimeException("@KafkaListener groupId must be set");
 		}
 
-		consumerProperties.put("bootstrap.servers", kafkaServers);
 		consumerProperties.put("group.id", kafkaListener.groupId());
 
-		Class<?> valueClass = kafkaListener.clazz();
+		Class<?> valueClass = kafkaListener.valueClass();
 		int thread = kafkaListener.thread() < 1 ? 1 : kafkaListener.thread();
 		int count = kafkaListener.consumer() < 1 ? 1 : kafkaListener.consumer();
 		while (--count >= 0) {
-			join(bean, method, topics, thread, valueClass);
+			consume(bean, method, topics, thread, valueClass);
 		}
 	}
 
-	private void join(Object bean, Method method, String[] topics, int thread, Class<?> valueClass) {
+	private void consume(Object bean, Method method, String[] topics, int thread, Class<?> valueClass) {
 		ExecutorService executor = new ThreadPoolExecutor(thread, thread, 0L, TimeUnit.MILLISECONDS,
 				new SynchronousQueue<Runnable>(), new ThreadPoolExecutor.CallerRunsPolicy());
 
@@ -106,6 +107,12 @@ public class DefaultKafkaConsumer {
 				}
 			}
 		}
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		Objects.requireNonNull(kafkaServers, "kafka.servers must be set");
+		consumerProperties.put("bootstrap.servers", kafkaServers);
 	}
 
 }

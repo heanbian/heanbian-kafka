@@ -28,7 +28,7 @@ public class KafkaListenerBeanPostProcessor implements BeanPostProcessor {
 				});
 		if (!annotatedMethods.isEmpty()) {
 			for (Entry<Method, KafkaListener> entry : annotatedMethods.entrySet()) {
-				defaultKafkaConsumer.joinAsync(bean, entry.getKey(), entry.getValue());
+				defaultKafkaConsumer.consumeAsync(bean, entry.getKey(), entry.getValue());
 			}
 		}
 		return bean;
