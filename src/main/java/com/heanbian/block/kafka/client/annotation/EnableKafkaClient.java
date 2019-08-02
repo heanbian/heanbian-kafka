@@ -7,7 +7,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 import org.springframework.scheduling.annotation.EnableAsync;
 
@@ -17,6 +16,5 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @Documented
 @Inherited
 @EnableAsync
-@ComponentScan("com.heanbian.block.kafka.client")
 public @interface EnableKafkaClient {
 }

@@ -13,9 +13,11 @@ public @interface KafkaListener {
 
 	Class<?> clazz() default String.class;
 
+	String topic() default "";
+
 	String[] topics() default {};
 
-	String groupId() default "";
+	String groupId() default "kafkaGroupId";
 
 	int consumer() default 1;
 

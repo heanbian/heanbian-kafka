@@ -11,14 +11,11 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSON;
 
-@Component
-public class DefaultKafkaProducer implements InitializingBean {
+public class DefaultKafkaProducer {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultKafkaProducer.class);
 
 	@Value("${kafka.servers:}")
@@ -30,30 +27,26 @@ public class DefaultKafkaProducer implements InitializingBean {
 	private KafkaProducer<String, byte[]> producer;
 
 	public <T> void send(String topic, T data) {
-		send(topic, JSON.toJSONString(data));
+		send(topic, JSON.toJSONString(data), JSON.toJSONBytes(data));
 	}
 
-	private void send(String topic, String data) {
+	private void send(String topic, String key, byte[] value) {
 		Objects.requireNonNull(topic, "topic must be set");
-		Objects.requireNonNull(data, "data must not be null");
+		Objects.requireNonNull(key, "key must not be null");
 
+		producerProperties.put("bootstrap.servers", kafkaServers);
 		producer = new KafkaProducer<>(producerProperties);
-		ProducerRecord<String, byte[]> record = new ProducerRecord<>(topic, data.getBytes());
+		ProducerRecord<String, byte[]> record = new ProducerRecord<>(topic, key, value);
 		producer.send(record, new Callback() {
 
 			@Override
 			public void onCompletion(RecordMetadata metadata, Exception exception) {
-				if (LOGGER.isErrorEnabled()) {
+				if (exception != null && LOGGER.isErrorEnabled()) {
 					LOGGER.error(exception.getMessage(), exception);
 				}
 			}
 		});
 		producer.flush();
-	}
-
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		producerProperties.put("bootstrap.servers", kafkaServers);
 	}
 
 }

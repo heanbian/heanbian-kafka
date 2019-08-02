@@ -7,7 +7,7 @@ kafka:
   producer:
     key.serializer: org.apache.kafka.common.serialization.StringSerializer #必填，key序列化类型（由topic+headers+ProducerRecord里的key构成，通常用String即可）
     value.serializer: org.apache.kafka.common.serialization.ByteArraySerializer #必填，value序列化类型（由topic+headers+ProducerRecord里的value构成），也就是传输数据的序列化方式，建议用String或Bytes即可
-    partitioner.class: net.dgg.framework.tac.kafka.producer.DggKafkaPartitioner #自定义分区器
+    #partitioner.class:  #自定义分区器
     acks: 1 #默认1,取值[all, -1, 0, 1]，all或-1（等价）表示kafka写入磁盘成功后才返回ack，能够确保数据不丢失；1表示kafka只要接收到数据就返回ack，不能确保写入磁盘；0表示不使用ack也不会retry。
     buffer.memory: 33554432 #数据发送等待的缓冲区大小，该值设置得太小可能会导致异常，默认33554432
     compression.type: none #数据压缩类型，取值none, gzip, snappy, lz4，默认none，批处理的情况压缩效率较高

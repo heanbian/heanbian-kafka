@@ -17,16 +17,13 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSON;
 import com.heanbian.block.kafka.client.annotation.KafkaListener;
 
-@Component
-public class DefaultKafkaConsumer implements InitializingBean {
+public class DefaultKafkaConsumer {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultKafkaConsumer.class);
 
 	@Value("${kafka.servers:}")
@@ -38,12 +35,19 @@ public class DefaultKafkaConsumer implements InitializingBean {
 	@Async
 	public void joinAsync(Object bean, Method method, KafkaListener kafkaListener) {
 		String[] topics = kafkaListener.topics();
+
 		if (topics == null || topics.length <= 0) {
-			throw new RuntimeException("@KafkaListener topics must be set");
+			if (kafkaListener.topic().equals("")) {
+				throw new RuntimeException("@KafkaListener topics must be set");
+			}
+			topics = new String[] { kafkaListener.topic() };
 		}
+
 		if (kafkaListener.groupId().equals("")) {
 			throw new RuntimeException("@KafkaListener groupId must be set");
 		}
+
+		consumerProperties.put("bootstrap.servers", kafkaServers);
 		consumerProperties.put("group.id", kafkaListener.groupId());
 
 		Class<?> valueClass = kafkaListener.clazz();
@@ -104,8 +108,4 @@ public class DefaultKafkaConsumer implements InitializingBean {
 		}
 	}
 
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		consumerProperties.put("bootstrap.servers", kafkaServers);
-	}
 }
