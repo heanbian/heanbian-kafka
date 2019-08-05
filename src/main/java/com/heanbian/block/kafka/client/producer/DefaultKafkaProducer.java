@@ -22,37 +22,37 @@ public class DefaultKafkaProducer implements InitializingBean {
 	private Properties producerProperties;
 	private KafkaProducer<String, byte[]> producer;
 
-	public <T> void send(String topic, List<T> datas) {
-		if (datas != null && datas.size() > 0) {
-			datas.forEach(d -> send(topic, d));
+	public <T> void send(String topic, List<T> messages) {
+		if (messages != null && messages.size() > 0) {
+			messages.forEach(d -> send(topic, d));
 		}
 	}
 
-	public <T> void send(String topic, T data) {
+	public <T> void send(String topic, T message) {
 		Objects.requireNonNull(topic, "topic must be set");
-		Objects.requireNonNull(data, "data must not be null");
-		send(topic, UUID.randomUUID().toString(), JSON.toJSONBytes(data), new DefaultKafkaCallback());
+		Objects.requireNonNull(message, "message must not be null");
+		send(topic, UUID.randomUUID().toString(), JSON.toJSONBytes(message), new DefaultKafkaCallback());
 	}
 
-	public <T> void send(String topic, T data, Callback callback) {
+	public <T> void send(String topic, T message, Callback callback) {
 		Objects.requireNonNull(topic, "topic must be set");
-		Objects.requireNonNull(data, "data must not be null");
-		send(topic, UUID.randomUUID().toString(), JSON.toJSONBytes(data), callback);
+		Objects.requireNonNull(message, "message must not be null");
+		send(topic, UUID.randomUUID().toString(), JSON.toJSONBytes(message), callback);
 	}
 
-	public void send(String topic, String key, byte[] value, Callback callback) {
-		send(this.producerProperties, topic, key, value, callback);
+	public void send(String topic, String key, byte[] messageBytes, Callback callback) {
+		send(this.producerProperties, topic, key, messageBytes, callback);
 	}
 
-	public void send(Properties producerProperties, String topic, String key, byte[] value, Callback callback) {
+	public void send(Properties producerProperties, String topic, String key, byte[] messageBytes, Callback callback) {
 		Objects.requireNonNull(producerProperties, "producerProperties must be set");
 		Objects.requireNonNull(topic, "topic must not be null");
-		Objects.requireNonNull(value, "value must not be null");
+		Objects.requireNonNull(messageBytes, "messageBytes must not be null");
 
 		key = Optional.ofNullable(key).orElse(UUID.randomUUID().toString());
 
 		producer = new KafkaProducer<>(producerProperties);
-		ProducerRecord<String, byte[]> record = new ProducerRecord<>(topic, key, value);
+		ProducerRecord<String, byte[]> record = new ProducerRecord<>(topic, key, messageBytes);
 		producer.send(record, callback);
 		producer.flush();
 	}
