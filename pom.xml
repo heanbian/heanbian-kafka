@@ -6,7 +6,7 @@
 
 	<groupId>com.heanbian</groupId>
 	<artifactId>heanbian-kafka-client</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
 	<parent>
@@ -49,18 +49,12 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<snakeyaml.version>1.24</snakeyaml.version>
 		<fastjson.version>1.2.58</fastjson.version>
 		<kafka.clients.version>2.3.0</kafka.clients.version>
 		<spring.context.version>5.1.8.RELEASE</spring.context.version>
 	</properties>
 
 	<dependencies>
-		<dependency>
-			<groupId>org.yaml</groupId>
-			<artifactId>snakeyaml</artifactId>
-			<version>${snakeyaml.version}</version>
-		</dependency>
 		<dependency>
 			<groupId>com.alibaba</groupId>
 			<artifactId>fastjson</artifactId>
