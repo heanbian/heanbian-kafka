@@ -5,8 +5,6 @@ import java.util.Objects;
 import java.util.Properties;
 import java.util.UUID;
 
-import javax.annotation.Resource;
-
 import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -24,9 +22,7 @@ public class DefaultKafkaProducer implements InitializingBean {
 	@Value("${kafka.servers:}")
 	private String kafkaServers;
 
-	@Resource(name = "com.heanbian.block.kafka.client.producer.ProducerProperties")
 	private Properties producerProperties;
-
 	private KafkaProducer<String, byte[]> producer;
 
 	public <T> void send(String topic, List<T> datas) {
@@ -60,7 +56,20 @@ public class DefaultKafkaProducer implements InitializingBean {
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		Objects.requireNonNull(kafkaServers, "kafka.servers must be set");
+		producerProperties = new Properties();
 		producerProperties.put("bootstrap.servers", kafkaServers);
+		producerProperties.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+		producerProperties.put("value.serializer", "org.apache.kafka.common.serialization.ByteArraySerializer");
+		producerProperties.put("acks", "1");
+		producerProperties.put("buffer.memory", "33554432");
+		producerProperties.put("compression.type", "none");
+		producerProperties.put("retries", "3");
+		producerProperties.put("batch.size", "16384");
+		producerProperties.put("linger.ms", "0");
+		producerProperties.put("max.request.size", "104857600");
+		producerProperties.put("request.timeout.ms", "30000");
+		producerProperties.put("max.in.flight.requests.per.connection", "5");
+		producerProperties.put("enable.idempotence", "false");
 	}
 
 }

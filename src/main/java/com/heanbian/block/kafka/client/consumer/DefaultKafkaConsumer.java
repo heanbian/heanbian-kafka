@@ -11,8 +11,6 @@ import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.Resource;
-
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -31,7 +29,6 @@ public class DefaultKafkaConsumer implements InitializingBean {
 	@Value("${kafka.servers:}")
 	private String kafkaServers;
 
-	@Resource(name = "com.heanbian.block.kafka.client.consumer.ConsumerProperties")
 	private Properties consumerProperties;
 
 	@Async
@@ -112,7 +109,12 @@ public class DefaultKafkaConsumer implements InitializingBean {
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		Objects.requireNonNull(kafkaServers, "kafka.servers must be set");
+		consumerProperties = new Properties();
 		consumerProperties.put("bootstrap.servers", kafkaServers);
+		consumerProperties.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+		consumerProperties.put("value.deserializer", "org.apache.kafka.common.serialization.ByteArrayDeserializer");
+		consumerProperties.put("enable.auto.commit", "true");
+		consumerProperties.put("auto.commit.interval.ms", "1000");
 	}
 
 }
