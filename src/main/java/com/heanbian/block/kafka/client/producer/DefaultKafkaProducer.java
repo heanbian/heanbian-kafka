@@ -8,16 +8,12 @@ import java.util.UUID;
 import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.clients.producer.RecordMetadata;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 
 import com.alibaba.fastjson.JSON;
 
 public class DefaultKafkaProducer implements InitializingBean {
-	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultKafkaProducer.class);
 
 	@Value("${kafka.servers:}")
 	private String kafkaServers;
@@ -34,22 +30,19 @@ public class DefaultKafkaProducer implements InitializingBean {
 	public <T> void send(String topic, T data) {
 		Objects.requireNonNull(topic, "topic must be set");
 		Objects.requireNonNull(data, "data must not be null");
-		send(topic, UUID.randomUUID().toString(), JSON.toJSONBytes(data));
+		send(topic, UUID.randomUUID().toString(), JSON.toJSONBytes(data), new DefaultKafkaCallback());
 	}
 
-	private void send(String topic, String key, byte[] value) {
+	public <T> void send(String topic, T data, Callback callback) {
+		Objects.requireNonNull(topic, "topic must be set");
+		Objects.requireNonNull(data, "data must not be null");
+		send(topic, UUID.randomUUID().toString(), JSON.toJSONBytes(data), callback);
+	}
+
+	private void send(String topic, String key, byte[] value, Callback callback) {
 		producer = new KafkaProducer<>(producerProperties);
-
 		ProducerRecord<String, byte[]> record = new ProducerRecord<>(topic, key, value);
-		producer.send(record, new Callback() {
-
-			@Override
-			public void onCompletion(RecordMetadata metadata, Exception exception) {
-				if (exception != null && LOGGER.isErrorEnabled()) {
-					LOGGER.error(exception.getMessage(), exception);
-				}
-			}
-		});
+		producer.send(record, callback);
 		producer.flush();
 	}
 
