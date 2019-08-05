@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import org.apache.kafka.clients.producer.Callback;
 import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
@@ -61,19 +62,21 @@ public class DefaultKafkaProducer implements InitializingBean {
 	public void afterPropertiesSet() throws Exception {
 		Objects.requireNonNull(kafkaServers, "kafka.servers must be set");
 		producerProperties = new Properties();
-		producerProperties.put("bootstrap.servers", kafkaServers);
-		producerProperties.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-		producerProperties.put("value.serializer", "org.apache.kafka.common.serialization.ByteArraySerializer");
-		producerProperties.put("acks", "1");
-		producerProperties.put("buffer.memory", "33554432");
-		producerProperties.put("compression.type", "none");
-		producerProperties.put("retries", "3");
-		producerProperties.put("batch.size", "16384");
-		producerProperties.put("linger.ms", "0");
-		producerProperties.put("max.request.size", "104857600");
-		producerProperties.put("request.timeout.ms", "30000");
-		producerProperties.put("max.in.flight.requests.per.connection", "5");
-		producerProperties.put("enable.idempotence", "false");
+		producerProperties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServers);
+		producerProperties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG,
+				"org.apache.kafka.common.serialization.StringSerializer");
+		producerProperties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,
+				"org.apache.kafka.common.serialization.ByteArraySerializer");
+		producerProperties.put(ProducerConfig.ACKS_CONFIG, "1");
+		producerProperties.put(ProducerConfig.BUFFER_MEMORY_CONFIG, "33554432");
+		producerProperties.put(ProducerConfig.COMPRESSION_TYPE_CONFIG, "none");
+		producerProperties.put(ProducerConfig.RETRIES_CONFIG, "3");
+		producerProperties.put(ProducerConfig.BATCH_SIZE_CONFIG, "16384");
+		producerProperties.put(ProducerConfig.LINGER_MS_CONFIG, "0");
+		producerProperties.put(ProducerConfig.MAX_REQUEST_SIZE_CONFIG, "104857600");
+		producerProperties.put(ProducerConfig.REQUEST_TIMEOUT_MS_CONFIG, "30000");
+		producerProperties.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, "5");
+		producerProperties.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, "false");
 	}
 
 }

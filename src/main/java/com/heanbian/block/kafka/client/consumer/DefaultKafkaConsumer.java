@@ -11,6 +11,7 @@ import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -46,7 +47,7 @@ public class DefaultKafkaConsumer implements InitializingBean {
 			throw new RuntimeException("@KafkaListener groupId must be set");
 		}
 
-		consumerProperties.put("group.id", kafkaListener.groupId());
+		consumerProperties.put(ConsumerConfig.GROUP_ID_CONFIG, kafkaListener.groupId());
 
 		Class<?> valueClass = kafkaListener.valueClass();
 		int thread = kafkaListener.thread() < 1 ? 1 : kafkaListener.thread();
@@ -110,11 +111,13 @@ public class DefaultKafkaConsumer implements InitializingBean {
 	public void afterPropertiesSet() throws Exception {
 		Objects.requireNonNull(kafkaServers, "kafka.servers must be set");
 		consumerProperties = new Properties();
-		consumerProperties.put("bootstrap.servers", kafkaServers);
-		consumerProperties.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-		consumerProperties.put("value.deserializer", "org.apache.kafka.common.serialization.ByteArrayDeserializer");
-		consumerProperties.put("enable.auto.commit", "true");
-		consumerProperties.put("auto.commit.interval.ms", "1000");
+		consumerProperties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServers);
+		consumerProperties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
+				"org.apache.kafka.common.serialization.StringDeserializer");
+		consumerProperties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
+				"org.apache.kafka.common.serialization.ByteArrayDeserializer");
+		consumerProperties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "true");
+		consumerProperties.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, "1000");
 	}
 
 }
