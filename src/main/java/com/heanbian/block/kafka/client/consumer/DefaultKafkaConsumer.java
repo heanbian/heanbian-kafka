@@ -94,11 +94,12 @@ public class DefaultKafkaConsumer implements InitializingBean {
 		public void run() {
 			try {
 				for (ConsumerRecord<String, byte[]> record : records) {
+					if (valueClass == null) {
+						valueClass = method.getParameterTypes()[0];
+					}
+					String metadata = new String(record.value(), Charset.defaultCharset());
 					method.setAccessible(true);
-					//Class<?> valueClass = method.getParameterTypes()[0];
-					method.invoke(bean, (valueClass == String.class)
-							? new String(record.value(), Charset.defaultCharset())
-							: JSON.parseObject(new String(record.value(), Charset.defaultCharset()), valueClass));
+					method.invoke(bean, (valueClass == String.class) ? metadata : JSON.parseObject(metadata, valueClass));
 				}
 			} catch (Exception e) {
 				if (LOGGER.isErrorEnabled()) {
