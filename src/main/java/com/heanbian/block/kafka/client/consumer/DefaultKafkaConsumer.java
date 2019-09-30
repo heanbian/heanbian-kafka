@@ -36,28 +36,24 @@ public class DefaultKafkaConsumer implements InitializingBean {
 	public void consumeAsync(Object bean, Method method, KafkaListener kafkaListener) {
 		String[] topics = kafkaListener.topics();
 
-		if (topics == null || topics.length <= 0) {
-			if (kafkaListener.topic().equals("")) {
-				throw new RuntimeException("@KafkaListener topics must be set");
-			}
-			topics = new String[] { kafkaListener.topic() };
+		if (topics.length == 0) {
+			throw new RuntimeException("@KafkaListener topics must be set");
 		}
 
-		if (kafkaListener.groupId().equals("")) {
+		if (kafkaListener.groupId() == null) {
 			throw new RuntimeException("@KafkaListener groupId must be set");
 		}
 
 		consumerProperties.put(ConsumerConfig.GROUP_ID_CONFIG, kafkaListener.groupId());
 
-		Class<?> valueClass = kafkaListener.valueClass();
-		int thread = kafkaListener.thread() < 1 ? 1 : kafkaListener.thread();
-		int count = kafkaListener.consumer() < 1 ? 1 : kafkaListener.consumer();
+		int thread = kafkaListener.threadNum();
+		int count = kafkaListener.consumerNum();
 		while (--count >= 0) {
-			consume(bean, method, topics, thread, valueClass);
+			consume(bean, method, topics, thread);
 		}
 	}
 
-	private void consume(Object bean, Method method, String[] topics, int thread, Class<?> valueClass) {
+	private void consume(Object bean, Method method, String[] topics, int thread) {
 		ExecutorService executor = new ThreadPoolExecutor(thread, thread, 0L, TimeUnit.MILLISECONDS,
 				new SynchronousQueue<Runnable>(), new ThreadPoolExecutor.CallerRunsPolicy());
 
@@ -67,7 +63,7 @@ public class DefaultKafkaConsumer implements InitializingBean {
 			for (;;) {
 				ConsumerRecords<String, byte[]> records = kafkaConsumer.poll(Duration.ofSeconds(1));
 				if (!records.isEmpty()) {
-					executor.submit(new ExecutorConsumer(bean, method, records, valueClass));
+					executor.submit(new ExecutorConsumer(bean, method, records));
 				}
 			}
 		} finally {
@@ -76,30 +72,26 @@ public class DefaultKafkaConsumer implements InitializingBean {
 	}
 
 	public static class ExecutorConsumer implements Runnable {
-
 		private Object bean;
 		private Method method;
 		private ConsumerRecords<String, byte[]> records;
-		private Class<?> valueClass;
 
-		public ExecutorConsumer(Object bean, Method method, ConsumerRecords<String, byte[]> records,
-				Class<?> valueClass) {
+		public ExecutorConsumer(Object bean, Method method, ConsumerRecords<String, byte[]> records) {
 			this.bean = bean;
 			this.method = method;
 			this.records = records;
-			this.valueClass = valueClass;
 		}
 
 		@Override
 		public void run() {
 			try {
+				Class<?> valueClass = method.getParameterTypes()[0];
+				method.setAccessible(true);
+
 				for (ConsumerRecord<String, byte[]> record : records) {
-					if (valueClass == null) {
-						valueClass = method.getParameterTypes()[0];
-					}
 					String metadata = new String(record.value(), Charset.defaultCharset());
-					method.setAccessible(true);
-					method.invoke(bean, (valueClass == String.class) ? metadata : JSON.parseObject(metadata, valueClass));
+					method.invoke(bean,
+							(valueClass == String.class) ? metadata : JSON.parseObject(metadata, valueClass));
 				}
 			} catch (Exception e) {
 				if (LOGGER.isErrorEnabled()) {

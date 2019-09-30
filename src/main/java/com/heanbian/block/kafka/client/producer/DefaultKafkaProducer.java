@@ -2,7 +2,6 @@ package com.heanbian.block.kafka.client.producer;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.UUID;
 
@@ -50,7 +49,9 @@ public class DefaultKafkaProducer implements InitializingBean {
 		Objects.requireNonNull(topic, "topic must not be null");
 		Objects.requireNonNull(messageBytes, "messageBytes must not be null");
 
-		key = Optional.ofNullable(key).orElse(UUID.randomUUID().toString());
+		if (key == null) {
+			key = UUID.randomUUID().toString();
+		}
 
 		producer = new KafkaProducer<>(producerProperties);
 		ProducerRecord<String, byte[]> record = new ProducerRecord<>(topic, key, messageBytes);

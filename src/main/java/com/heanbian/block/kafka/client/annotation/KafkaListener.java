@@ -6,39 +6,17 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.springframework.core.annotation.AliasFor;
-
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface KafkaListener {
 
-	@AliasFor("valueClass")
-	Class<?> valueType() default String.class;
+	String[] topics();
 
-	@AliasFor("valueType")
-	Class<?> valueClass() default String.class;
+	String groupId() default "kafka_groupId";
 
-	@AliasFor("value")
-	String topic() default "kafka-topic";
+	int consumerNum() default 1;
 
-	@AliasFor("topic")
-	String value() default "kafka-topic";
-
-	@AliasFor("values")
-	String[] topics() default {};
-
-	@AliasFor("topics")
-	String[] values() default {};
-
-	@AliasFor("groupId")
-	String id() default "kafka-group-id";
-
-	@AliasFor("id")
-	String groupId() default "kafka-group-id";
-
-	int consumer() default 1;
-
-	int thread() default 1;
+	int threadNum() default 1;
 
 }
