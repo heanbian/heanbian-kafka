@@ -1,5 +1,7 @@
 # heanbian-kafka-client
 
+[TOC]
+
 ### `pom.xml`添加，如下：
 
 ```xml
@@ -31,7 +33,7 @@ public class XxxApplication {
 
 ```
 
-### 定义任意 @Component 类，并在其方法是加注解 `@KafkaListener` 样例：
+### 定义任意 `@Component` 类，并在其方法是加注解 `@KafkaListener` 样例：
 
 ```java
 
