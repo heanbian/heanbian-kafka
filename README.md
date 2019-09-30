@@ -17,12 +17,11 @@
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
 import com.heanbian.block.kafka.client.annotation.EnableKafkaClient;
 
 @EnableKafkaClient
 @SpringBootApplication
-public class App {
+public class XxxApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(App.class, args);
@@ -37,7 +36,6 @@ public class App {
 ```java
 
 import org.springframework.stereotype.Component;
-
 import com.heanbian.block.kafka.client.annotation.KafkaListener;
 
 @Component
