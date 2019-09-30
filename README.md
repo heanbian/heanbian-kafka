@@ -1,20 +1,24 @@
 # heanbian-kafka-client
 
-### `pom.xml`添加，如下：
+### `pom.xml` 添加，如下：
 
 ```xml
+
 <dependency>
 	<groupId>com.heanbian</groupId>
 	<artifactId>heanbian-kafka-client</artifactId>
 	<version>11.0.1</version>
 </dependency>
+
 ```
-注：具体最版本，可以到maven官网查找。
+注：JDK 11+ ，具体最新版本，可以到maven官网查找。
 
 ### `application.yml` 配置，样例：
 
 ```yaml
+
 kafka.servers: IP1:port,IP2:port ...
+
 ```
 
 ### Spring boot 2.x 项目启动类 XxxApplication 上注解 `@EnableKafkaClient` 样例:
