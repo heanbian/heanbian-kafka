@@ -11,6 +11,12 @@
 ```
 注：具体最版本，可以到maven官网查找。
 
+### `application.yml` 配置，样例：
+
+```yaml
+kafka.servers: IP1:port,IP2:port ...
+```
+
 ### Spring boot 2.x 项目启动类 XxxApplication 上注解 `@EnableKafkaClient` 样例:
 
 ```java
@@ -26,7 +32,6 @@ public class XxxApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(App.class, args);
 	}
-
 }
 
 ```
@@ -47,9 +52,4 @@ public class XxxKafkaConsumer {
 	}
 }
 
-```
-### `application.yml` 配置，样例：
-
-```yaml
-kafka.servers: IP1:port,IP2:port ...
 ```
