@@ -1,10 +1,18 @@
 # heanbian-kafka-client
 
-### 使用方法
+1. `pom.xml`添加，如下：
 
-1.Spring boot 2.x 项目启动类 XxxApplication 上注解 `@EnableKafkaClient`
+```xml
+<dependency>
+	<groupId>com.heanbian</groupId>
+	<artifactId>heanbian-kafka-client</artifactId>
+	<version>11.0.1</version>
+</dependency>
+```
+注：具体最版本，可以到maven官网查找。
 
-样例:
+2. Spring boot 2.x 项目启动类 XxxApplication 上注解 `@EnableKafkaClient` 样例:
+
 ```java
 
 import org.springframework.boot.SpringApplication;
@@ -24,9 +32,7 @@ public class App {
 
 ```
 
-2.定义任意 @Component 类，并在其方法是加注解 `@KafkaListener`
-
-样例：
+3. 定义任意 @Component 类，并在其方法是加注解 `@KafkaListener` 样例：
 
 ```java
 
@@ -43,4 +49,9 @@ public class XxxKafkaConsumer {
 	}
 }
 
+```
+4. `application.yml` 配置，样例：
+
+```yaml
+kafka.servers: IP1:port,IP2:port ...
 ```
