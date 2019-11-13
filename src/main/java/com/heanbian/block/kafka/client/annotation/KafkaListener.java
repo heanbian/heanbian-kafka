@@ -13,10 +13,8 @@ public @interface KafkaListener {
 
 	String[] topics();
 
-	String groupId() default "kafka_groupId";
+	String groupId() default "heanbian_kafka_groupId";
 
-	int consumerNum() default 1;
-
-	int threadNum() default 1;
+	int threadCount() default 1;
 
 }

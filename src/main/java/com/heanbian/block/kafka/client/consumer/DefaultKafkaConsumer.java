@@ -30,35 +30,13 @@ public class DefaultKafkaConsumer implements InitializingBean {
 	@Value("${kafka.servers:}")
 	private String kafkaServers;
 
-	private Properties consumerProperties;
-
 	@Async
-	public void consumeAsync(Object bean, Method method, KafkaListener kafkaListener) {
-		String[] topics = kafkaListener.topics();
+	public void consume(Object bean, Method method, KafkaListener kafkaListener) {
+		final int poolSize = kafkaListener.threadCount();
+		ExecutorService executor = new ThreadPoolExecutor(poolSize, poolSize, 0L, TimeUnit.MILLISECONDS, new SynchronousQueue<Runnable>(), new ThreadPoolExecutor.CallerRunsPolicy());
 
-		if (topics.length == 0) {
-			throw new RuntimeException("@KafkaListener topics must be set");
-		}
-
-		if (kafkaListener.groupId() == null) {
-			throw new RuntimeException("@KafkaListener groupId must be set");
-		}
-
-		consumerProperties.put(ConsumerConfig.GROUP_ID_CONFIG, kafkaListener.groupId());
-
-		int thread = kafkaListener.threadNum();
-		int count = kafkaListener.consumerNum();
-		while (--count >= 0) {
-			consume(bean, method, topics, thread);
-		}
-	}
-
-	private void consume(Object bean, Method method, String[] topics, int thread) {
-		ExecutorService executor = new ThreadPoolExecutor(thread, thread, 0L, TimeUnit.MILLISECONDS,
-				new SynchronousQueue<Runnable>(), new ThreadPoolExecutor.CallerRunsPolicy());
-
-		KafkaConsumer<String, byte[]> kafkaConsumer = new KafkaConsumer<>(consumerProperties);
-		kafkaConsumer.subscribe(Arrays.asList(topics));
+		KafkaConsumer<String, byte[]> kafkaConsumer = new KafkaConsumer<>(getConsumerProperties(kafkaListener.groupId()));
+		kafkaConsumer.subscribe(Arrays.asList(kafkaListener.topics()));
 		try {
 			for (;;) {
 				ConsumerRecords<String, byte[]> records = kafkaConsumer.poll(Duration.ofSeconds(1));
@@ -90,8 +68,7 @@ public class DefaultKafkaConsumer implements InitializingBean {
 
 				for (ConsumerRecord<String, byte[]> record : records) {
 					String metadata = new String(record.value(), Charset.defaultCharset());
-					method.invoke(bean,
-							(valueClass == String.class) ? metadata : JSON.parseObject(metadata, valueClass));
+					method.invoke(bean, (valueClass == String.class) ? metadata : JSON.parseObject(metadata, valueClass));
 				}
 			} catch (Exception e) {
 				if (LOGGER.isErrorEnabled()) {
@@ -103,15 +80,18 @@ public class DefaultKafkaConsumer implements InitializingBean {
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		Objects.requireNonNull(kafkaServers, "kafka.servers must be set");
-		consumerProperties = new Properties();
+		Objects.requireNonNull(kafkaServers, "'kafka.servers' must be setting");
+	}
+	
+	private Properties getConsumerProperties(String groupId) {
+		Properties consumerProperties = new Properties();
 		consumerProperties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServers);
-		consumerProperties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG,
-				"org.apache.kafka.common.serialization.StringDeserializer");
-		consumerProperties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
-				"org.apache.kafka.common.serialization.ByteArrayDeserializer");
+		consumerProperties.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
+		consumerProperties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
+		consumerProperties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.ByteArrayDeserializer");
 		consumerProperties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "true");
 		consumerProperties.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, "1000");
+		return consumerProperties;
 	}
 
 }
