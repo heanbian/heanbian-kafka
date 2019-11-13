@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
 @Documented
 public @interface KafkaListener {
 
-	String[] topics();
+	String topic();
 
 	String groupId() default "heanbian_kafka_groupId";
 

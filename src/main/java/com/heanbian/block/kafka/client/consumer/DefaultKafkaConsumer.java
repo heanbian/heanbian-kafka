@@ -36,7 +36,7 @@ public class DefaultKafkaConsumer implements InitializingBean {
 		ExecutorService executor = new ThreadPoolExecutor(poolSize, poolSize, 0L, TimeUnit.MILLISECONDS, new SynchronousQueue<Runnable>(), new ThreadPoolExecutor.CallerRunsPolicy());
 
 		KafkaConsumer<String, byte[]> kafkaConsumer = new KafkaConsumer<>(getConsumerProperties(kafkaListener.groupId()));
-		kafkaConsumer.subscribe(Arrays.asList(kafkaListener.topics()));
+		kafkaConsumer.subscribe(Arrays.asList(kafkaListener.topic()));
 		try {
 			for (;;) {
 				ConsumerRecords<String, byte[]> records = kafkaConsumer.poll(Duration.ofSeconds(1));
