@@ -1,4 +1,4 @@
-package com.heanbian.block.kafka.client.annotation;
+package com.heanbian.block.kafka.client.config;
 
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -12,6 +12,7 @@ import org.springframework.core.MethodIntrospector;
 import org.springframework.core.MethodIntrospector.MetadataLookup;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 
+import com.heanbian.block.kafka.client.annotation.KafkaListener;
 import com.heanbian.block.kafka.client.consumer.DefaultKafkaConsumer;
 
 public class KafkaListenerBeanPostProcessor implements BeanPostProcessor {
@@ -28,7 +29,7 @@ public class KafkaListenerBeanPostProcessor implements BeanPostProcessor {
 				});
 		if (!annotatedMethods.isEmpty()) {
 			for (Entry<Method, KafkaListener> entry : annotatedMethods.entrySet()) {
-				defaultKafkaConsumer.consumeAsync(bean, entry.getKey(), entry.getValue());
+				defaultKafkaConsumer.consume(bean, entry.getKey(), entry.getValue());
 			}
 		}
 		return bean;

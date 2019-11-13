@@ -1,4 +1,4 @@
-package com.heanbian.block.kafka.client.annotation;
+package com.heanbian.block.kafka.client.config;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.Bean;
@@ -11,18 +11,18 @@ import com.heanbian.block.kafka.client.producer.DefaultKafkaProducer;
 @Configuration
 public class KafkaConfiguration {
 
-	@Bean("com.heanbian.block.kafka.client.annotation.KafkaListenerBeanPostProcessor")
+	@Bean
 	@Role(BeanDefinition.ROLE_INFRASTRUCTURE)
 	public KafkaListenerBeanPostProcessor kafkaListenerBeanPostProcessor() {
 		return new KafkaListenerBeanPostProcessor();
 	}
 
-	@Bean("com.heanbian.block.kafka.client.consumer.DefaultKafkaConsumer")
+	@Bean
 	public DefaultKafkaConsumer defaultKafkaConsumer() {
 		return new DefaultKafkaConsumer();
 	}
 
-	@Bean("com.heanbian.block.kafka.client.producer.DefaultKafkaProducer")
+	@Bean
 	public DefaultKafkaProducer defaultKafkaProducer() {
 		return new DefaultKafkaProducer();
 	}
