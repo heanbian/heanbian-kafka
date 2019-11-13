@@ -7,11 +7,11 @@
 <dependency>
 	<groupId>com.heanbian</groupId>
 	<artifactId>heanbian-kafka-client</artifactId>
-	<version>11.0.1</version>
+	<version>11.0.3</version>
 </dependency>
 
 ```
-注：JDK 11+ ，具体最新版本，可以到maven官网查找。
+注：JDK 11+ ，最新版本，可以到maven官网查找。
 
 ### `application.yml` 配置，样例：
 
@@ -25,8 +25,6 @@ kafka.servers: IP1:port,IP2:port ...
 
 ```java
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import com.heanbian.block.kafka.client.annotation.EnableKafkaClient;
 
 @EnableKafkaClient
@@ -50,7 +48,7 @@ import com.heanbian.block.kafka.client.annotation.KafkaListener;
 @Component
 public class XxxKafkaConsumer {
 
-	@KafkaListener(topics = { "test" })
+	@KafkaListener(topic =  "test")
 	public void test(String var0) {
 		// TODO
 	}
