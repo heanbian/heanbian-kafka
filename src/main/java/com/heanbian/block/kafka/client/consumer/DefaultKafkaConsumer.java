@@ -1,17 +1,23 @@
 package com.heanbian.block.kafka.client.consumer;
 
+import static java.util.Objects.requireNonNull;
+import static org.apache.kafka.clients.consumer.ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG;
+import static org.apache.kafka.clients.consumer.ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG;
+import static org.apache.kafka.clients.consumer.ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG;
+import static org.apache.kafka.clients.consumer.ConsumerConfig.GROUP_ID_CONFIG;
+import static org.apache.kafka.clients.consumer.ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG;
+import static org.apache.kafka.clients.consumer.ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG;
+
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.time.Duration;
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -32,11 +38,15 @@ public class DefaultKafkaConsumer implements InitializingBean {
 
 	@Async
 	public void consume(Object bean, Method method, KafkaListener kafkaListener) {
-		final int poolSize = kafkaListener.threadCount();
-		ExecutorService executor = new ThreadPoolExecutor(poolSize, poolSize, 0L, TimeUnit.MILLISECONDS, new SynchronousQueue<Runnable>(), new ThreadPoolExecutor.CallerRunsPolicy());
+		final String topic = kafkaListener.broadcast() ? kafkaListener.topic() + "_" + uuid() : kafkaListener.topic();
+		final int poolSize = kafkaListener.poolSize();
 
-		KafkaConsumer<String, byte[]> kafkaConsumer = new KafkaConsumer<>(getConsumerProperties(kafkaListener.groupId()));
-		kafkaConsumer.subscribe(Arrays.asList(kafkaListener.topic()));
+		ExecutorService executor = new ThreadPoolExecutor(poolSize, poolSize, 0L, TimeUnit.MILLISECONDS,
+				new SynchronousQueue<Runnable>(), new ThreadPoolExecutor.CallerRunsPolicy());
+
+		KafkaConsumer<String, byte[]> kafkaConsumer = new KafkaConsumer<>(
+				getConsumerProperties(kafkaListener.groupId()));
+		kafkaConsumer.subscribe(Arrays.asList(topic));
 		try {
 			for (;;) {
 				ConsumerRecords<String, byte[]> records = kafkaConsumer.poll(Duration.ofSeconds(1));
@@ -68,7 +78,8 @@ public class DefaultKafkaConsumer implements InitializingBean {
 
 				for (ConsumerRecord<String, byte[]> record : records) {
 					String metadata = new String(record.value(), Charset.defaultCharset());
-					method.invoke(bean, (valueClass == String.class) ? metadata : JSON.parseObject(metadata, valueClass));
+					method.invoke(bean,
+							(valueClass == String.class) ? metadata : JSON.parseObject(metadata, valueClass));
 				}
 			} catch (Exception e) {
 				if (LOGGER.isErrorEnabled()) {
@@ -80,18 +91,22 @@ public class DefaultKafkaConsumer implements InitializingBean {
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		Objects.requireNonNull(kafkaServers, "'kafka.servers' must be setting");
+		requireNonNull(kafkaServers, "'kafka.servers' must be setting");
 	}
-	
+
 	private Properties getConsumerProperties(String groupId) {
-		Properties consumerProperties = new Properties();
-		consumerProperties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaServers);
-		consumerProperties.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
-		consumerProperties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
-		consumerProperties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.ByteArrayDeserializer");
-		consumerProperties.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, "true");
-		consumerProperties.put(ConsumerConfig.AUTO_COMMIT_INTERVAL_MS_CONFIG, "1000");
-		return consumerProperties;
+		Properties c = new Properties();
+		c.put(BOOTSTRAP_SERVERS_CONFIG, kafkaServers);
+		c.put(GROUP_ID_CONFIG, groupId);
+		c.put(KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
+		c.put(VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.ByteArrayDeserializer");
+		c.put(ENABLE_AUTO_COMMIT_CONFIG, "true");
+		c.put(AUTO_COMMIT_INTERVAL_MS_CONFIG, "1000");
+		return c;
+	}
+
+	private String uuid() {
+		return java.util.UUID.randomUUID().toString().replaceAll("-", "");
 	}
 
 }
