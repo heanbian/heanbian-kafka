@@ -15,8 +15,6 @@ public @interface KafkaListener {
 
 	String groupId() default "heanbian_kafka";
 
-	int poolSize() default 1;
-
 	boolean broadcast() default false;
 
 }

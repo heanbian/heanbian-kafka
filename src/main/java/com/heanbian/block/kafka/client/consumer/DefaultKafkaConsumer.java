@@ -13,10 +13,6 @@ import java.nio.charset.Charset;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Properties;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.SynchronousQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -38,20 +34,17 @@ public class DefaultKafkaConsumer implements InitializingBean {
 
 	@Async
 	public void consume(Object bean, Method method, KafkaListener kafkaListener) {
-		final String topic = kafkaListener.broadcast() ? kafkaListener.topic() + "_" + uuid() : kafkaListener.topic();
-		final int poolSize = kafkaListener.poolSize();
+		final String topic = kafkaListener.topic();
+		final String groupId = kafkaListener.broadcast() ? kafkaListener.groupId() + "_" + uuid()
+				: kafkaListener.groupId();
 
-		ExecutorService executor = new ThreadPoolExecutor(poolSize, poolSize, 0L, TimeUnit.MILLISECONDS,
-				new SynchronousQueue<Runnable>(), new ThreadPoolExecutor.CallerRunsPolicy());
-
-		KafkaConsumer<String, byte[]> kafkaConsumer = new KafkaConsumer<>(
-				getConsumerProperties(kafkaListener.groupId()));
+		KafkaConsumer<String, byte[]> kafkaConsumer = new KafkaConsumer<>(getConsumerProperties(groupId));
 		kafkaConsumer.subscribe(Arrays.asList(topic));
 		try {
 			for (;;) {
 				ConsumerRecords<String, byte[]> records = kafkaConsumer.poll(Duration.ofSeconds(1));
 				if (!records.isEmpty()) {
-					executor.submit(new ExecutorConsumer(bean, method, records));
+					exec(bean, method, records);
 				}
 			}
 		} finally {
@@ -59,32 +52,18 @@ public class DefaultKafkaConsumer implements InitializingBean {
 		}
 	}
 
-	public static class ExecutorConsumer implements Runnable {
-		private Object bean;
-		private Method method;
-		private ConsumerRecords<String, byte[]> records;
+	private void exec(Object bean, Method method, ConsumerRecords<String, byte[]> records) {
+		try {
+			Class<?> valueClass = method.getParameterTypes()[0];
+			method.setAccessible(true);
 
-		public ExecutorConsumer(Object bean, Method method, ConsumerRecords<String, byte[]> records) {
-			this.bean = bean;
-			this.method = method;
-			this.records = records;
-		}
-
-		@Override
-		public void run() {
-			try {
-				Class<?> valueClass = method.getParameterTypes()[0];
-				method.setAccessible(true);
-
-				for (ConsumerRecord<String, byte[]> record : records) {
-					String metadata = new String(record.value(), Charset.defaultCharset());
-					method.invoke(bean,
-							(valueClass == String.class) ? metadata : JSON.parseObject(metadata, valueClass));
-				}
-			} catch (Exception e) {
-				if (LOGGER.isErrorEnabled()) {
-					LOGGER.error(e.getMessage(), e);
-				}
+			for (ConsumerRecord<String, byte[]> record : records) {
+				String metadata = new String(record.value(), Charset.defaultCharset());
+				method.invoke(bean, (valueClass == String.class) ? metadata : JSON.parseObject(metadata, valueClass));
+			}
+		} catch (Exception e) {
+			if (LOGGER.isErrorEnabled()) {
+				LOGGER.error(e.getMessage(), e);
 			}
 		}
 	}
