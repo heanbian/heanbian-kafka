@@ -7,7 +7,7 @@
 <dependency>
 	<groupId>com.heanbian</groupId>
 	<artifactId>heanbian-kafka-client</artifactId>
-	<version>11.0.8</version>
+	<version>11.2.0</version>
 </dependency>
 
 ```
