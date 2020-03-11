@@ -56,7 +56,7 @@ public class DefaultKafkaProducer implements InitializingBean {
 			callback = new DefaultKafkaCallback();
 		}
 
-		producer = new KafkaProducer<>(getProducerProperties());
+		producer = new KafkaProducer<>(producerProperties());
 		ProducerRecord<String, byte[]> record = new ProducerRecord<>(topic, key, value);
 		producer.send(record, callback);
 		producer.flush();
@@ -67,7 +67,7 @@ public class DefaultKafkaProducer implements InitializingBean {
 		requireNonNull(kafkaServers, "'kafka.servers' must be setting");
 	}
 
-	private Properties getProducerProperties() {
+	private Properties producerProperties() {
 		Properties p = new Properties();
 		p.put(BOOTSTRAP_SERVERS_CONFIG, kafkaServers);
 		p.put(KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");

@@ -34,12 +34,11 @@ public class DefaultKafkaConsumer implements InitializingBean {
 
 	@Async
 	public void consume(Object bean, Method method, KafkaListener kafkaListener) {
-		final String topic = kafkaListener.topic();
 		final String groupId = kafkaListener.broadcast() ? kafkaListener.groupId() + "_" + uuid()
 				: kafkaListener.groupId();
 
-		KafkaConsumer<String, byte[]> kafkaConsumer = new KafkaConsumer<>(getConsumerProperties(groupId));
-		kafkaConsumer.subscribe(Arrays.asList(topic));
+		KafkaConsumer<String, byte[]> kafkaConsumer = new KafkaConsumer<>(consumerProperties(groupId));
+		kafkaConsumer.subscribe(Arrays.asList(kafkaListener.topic()));
 		try {
 			for (;;) {
 				ConsumerRecords<String, byte[]> records = kafkaConsumer.poll(Duration.ofSeconds(1));
@@ -73,7 +72,7 @@ public class DefaultKafkaConsumer implements InitializingBean {
 		requireNonNull(kafkaServers, "'kafka.servers' must be setting");
 	}
 
-	private Properties getConsumerProperties(String groupId) {
+	private Properties consumerProperties(String groupId) {
 		Properties c = new Properties();
 		c.put(BOOTSTRAP_SERVERS_CONFIG, kafkaServers);
 		c.put(GROUP_ID_CONFIG, groupId);
