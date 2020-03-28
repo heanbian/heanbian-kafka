@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 import org.springframework.context.annotation.Import;
 import org.springframework.scheduling.annotation.EnableAsync;
 
-import com.heanbian.block.kafka.client.config.KafkaConfiguration;
+import com.heanbian.block.kafka.client.autoconfigure.KafkaConfiguration;
 
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

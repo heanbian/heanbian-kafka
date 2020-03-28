@@ -6,7 +6,7 @@
 
 	<groupId>com.heanbian</groupId>
 	<artifactId>heanbian-kafka-client</artifactId>
-	<version>11.2.1</version>
+	<version>11.2.2</version>
 	<packaging>jar</packaging>
 
 	<name>heanbian-kafka-client</name>
@@ -160,8 +160,8 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<fastjson.version>1.2.67</fastjson.version>
-		<kafka.clients.version>2.4.0</kafka.clients.version>
-		<spring-framework.version>5.2.4.RELEASE</spring-framework.version>
+		<kafka.clients.version>2.4.1</kafka.clients.version>
+		<spring-framework.version>5.2.5.RELEASE</spring-framework.version>
 		<arguments />
 	</properties>
 
