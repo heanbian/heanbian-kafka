@@ -1,4 +1,4 @@
-package com.heanbian.block.kafka.client.config;
+package com.heanbian.block.kafka.client.autoconfigure;
 
 import static org.springframework.aop.support.AopUtils.getTargetClass;
 import static org.springframework.core.MethodIntrospector.selectMethods;
