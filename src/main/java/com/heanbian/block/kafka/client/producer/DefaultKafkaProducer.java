@@ -24,9 +24,12 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 
-import com.alibaba.fastjson.JSON;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class DefaultKafkaProducer implements InitializingBean {
+
+	private final ObjectMapper mapper = new ObjectMapper();
 
 	@Value("${kafka.servers:}")
 	private String kafkaServers;
@@ -42,7 +45,13 @@ public class DefaultKafkaProducer implements InitializingBean {
 	}
 
 	public <T> void send(String topic, String key, T value, Callback callback) {
-		send(topic, key, JSON.toJSONBytes(value), callback);
+		requireNonNull(value, "value must not be null");
+		try {
+			byte[] buff = mapper.writeValueAsBytes(value);
+			send(topic, key, buff, callback);
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	public void send(String topic, String key, byte[] value, Callback callback) {

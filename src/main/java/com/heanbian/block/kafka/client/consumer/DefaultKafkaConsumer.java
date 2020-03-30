@@ -23,11 +23,13 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 
-import com.alibaba.fastjson.JSON;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.heanbian.block.kafka.client.annotation.KafkaListener;
 
 public class DefaultKafkaConsumer implements InitializingBean {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DefaultKafkaConsumer.class);
+
+	private final ObjectMapper mapper = new ObjectMapper();
 
 	@Value("${kafka.servers:}")
 	private String kafkaServers;
@@ -58,7 +60,7 @@ public class DefaultKafkaConsumer implements InitializingBean {
 
 			for (ConsumerRecord<String, byte[]> record : records) {
 				String metadata = new String(record.value(), Charset.defaultCharset());
-				method.invoke(bean, (valueClass == String.class) ? metadata : JSON.parseObject(metadata, valueClass));
+				method.invoke(bean, (valueClass == String.class) ? metadata : mapper.readValue(metadata, valueClass));
 			}
 		} catch (Exception e) {
 			if (LOGGER.isErrorEnabled()) {
