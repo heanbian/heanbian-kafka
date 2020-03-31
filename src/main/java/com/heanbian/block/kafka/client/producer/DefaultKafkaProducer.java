@@ -25,6 +25,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class DefaultKafkaProducer implements InitializingBean {
@@ -74,6 +75,7 @@ public class DefaultKafkaProducer implements InitializingBean {
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		requireNonNull(kafkaServers, "'kafka.servers' must be setting");
+		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 	}
 
 	private Properties producerProperties() {

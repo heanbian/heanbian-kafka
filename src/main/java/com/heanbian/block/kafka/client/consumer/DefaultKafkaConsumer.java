@@ -23,6 +23,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.heanbian.block.kafka.client.annotation.KafkaListener;
 
@@ -72,6 +73,7 @@ public class DefaultKafkaConsumer implements InitializingBean {
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		requireNonNull(kafkaServers, "'kafka.servers' must be setting");
+		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 	}
 
 	private Properties consumerProperties(String groupId) {
