@@ -6,7 +6,7 @@
 
 	<groupId>com.heanbian</groupId>
 	<artifactId>heanbian-kafka-client</artifactId>
-	<version>11.2.6</version>
+	<version>11.2.7</version>
 	<packaging>jar</packaging>
 
 	<name>heanbian-kafka-client</name>
@@ -159,9 +159,9 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<jackson.version>2.10.3</jackson.version>
+		<jackson.version>2.11.0</jackson.version>
 		<kafka.clients.version>2.5.0</kafka.clients.version>
-		<spring-framework.version>5.2.5.RELEASE</spring-framework.version>
+		<spring-framework.version>5.2.6.RELEASE</spring-framework.version>
 		<arguments />
 	</properties>
 
@@ -170,19 +170,16 @@
 			<groupId>org.apache.kafka</groupId>
 			<artifactId>kafka-clients</artifactId>
 			<version>${kafka.clients.version}</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
 			<version>${spring-framework.version}</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
 			<version>${jackson.version}</version>
-			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 </project>
