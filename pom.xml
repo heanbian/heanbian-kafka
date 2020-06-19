@@ -11,7 +11,7 @@
 
 	<name>heanbian-kafka-client</name>
 	<url>https://github.com/heanbian/heanbian-kafka-client</url>
-	<description>Heanbian kafka client components.</description>
+	<description>Heanbian kafka client component.</description>
 	<inceptionYear>2019</inceptionYear>
 
 	<licenses>
