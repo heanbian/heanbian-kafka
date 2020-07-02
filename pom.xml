@@ -159,7 +159,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<jackson.version>2.11.0</jackson.version>
+		<jackson.version>2.11.1</jackson.version>
 		<kafka.clients.version>2.5.0</kafka.clients.version>
 		<spring-framework.version>5.2.7.RELEASE</spring-framework.version>
 		<arguments />
