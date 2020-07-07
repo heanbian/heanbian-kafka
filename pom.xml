@@ -6,13 +6,18 @@
 
 	<groupId>com.heanbian</groupId>
 	<artifactId>heanbian-kafka-client</artifactId>
-	<version>11.2.9</version>
+	<version>11.3.0</version>
 	<packaging>jar</packaging>
 
 	<name>heanbian-kafka-client</name>
 	<url>https://github.com/heanbian/heanbian-kafka-client</url>
 	<description>Heanbian kafka client component.</description>
 	<inceptionYear>2019</inceptionYear>
+
+	<organization>
+		<name>Heanbian</name>
+		<url>https://heanbian.com</url>
+	</organization>
 
 	<licenses>
 		<license>
