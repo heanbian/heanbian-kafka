@@ -12,7 +12,7 @@ JDK11+
 <dependency>
 	<groupId>com.heanbian</groupId>
 	<artifactId>heanbian-kafka-client</artifactId>
-	<version>11.3.0</version>
+	<version>11.3.3</version>
 </dependency>
 ```
 

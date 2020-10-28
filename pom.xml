@@ -6,7 +6,7 @@
 
 	<groupId>com.heanbian</groupId>
 	<artifactId>heanbian-kafka-client</artifactId>
-	<version>11.3.2</version>
+	<version>11.3.3</version>
 	<packaging>jar</packaging>
 
 	<name>heanbian-kafka-client</name>
@@ -33,7 +33,7 @@
 			<name>heanbian</name>
 			<email>heanbian@heanbian.com</email>
 			<organization>heanbian.com</organization>
-			<organizationUrl>https://www.heanbian.com</organizationUrl>
+			<organizationUrl>https://heanbian.com</organizationUrl>
 			<roles>
 				<role>developer</role>
 			</roles>
@@ -164,9 +164,9 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<jackson.version>2.11.2</jackson.version>
+		<jackson.version>2.11.3</jackson.version>
 		<kafka.clients.version>2.6.0</kafka.clients.version>
-		<spring-framework.version>5.2.9.RELEASE</spring-framework.version>
+		<spring-framework.version>5.3.0</spring-framework.version>
 		<arguments />
 	</properties>
 
