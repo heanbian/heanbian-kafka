@@ -4,14 +4,14 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.heanbian</groupId>
-	<artifactId>heanbian-kafka-client</artifactId>
-	<version>11.3.6</version>
+	<groupId>com.heanbian.block</groupId>
+	<artifactId>heanbian-kafka</artifactId>
+	<version>1.0.0</version>
 	<packaging>jar</packaging>
 
-	<name>heanbian-kafka-client</name>
-	<url>https://github.com/heanbian/heanbian-kafka-client</url>
-	<description>Heanbian kafka client component.</description>
+	<name>heanbian-kafka</name>
+	<url>https://github.com/heanbian/heanbian-kafka</url>
+	<description>Heanbian kafka component.</description>
 	<inceptionYear>2019</inceptionYear>
 
 	<organization>
@@ -41,14 +41,14 @@
 	</developers>
 
 	<scm>
-		<connection>scm:git:https://github.com/heanbian/heanbian-kafka-client.git</connection>
-		<developerConnection>scm:git:https://github.com/heanbian/heanbian-kafka-client.git</developerConnection>
-		<url>https://github.com/heanbian/heanbian-kafka-client</url>
+		<connection>scm:git:https://github.com/heanbian/heanbian-kafka.git</connection>
+		<developerConnection>scm:git:https://github.com/heanbian/heanbian-kafka.git</developerConnection>
+		<url>https://github.com/heanbian/heanbian-kafka</url>
 	</scm>
 
 	<issueManagement>
 		<system>Github</system>
-		<url>https://github.com/heanbian/heanbian-kafka-client/issues</url>
+		<url>https://github.com/heanbian/heanbian-kafka/issues</url>
 	</issueManagement>
 
 	<repositories>

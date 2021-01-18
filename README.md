@@ -10,9 +10,9 @@ JDK11+
 
 ```
 <dependency>
-	<groupId>com.heanbian</groupId>
-	<artifactId>heanbian-kafka-client</artifactId>
-	<version>11.3.3</version>
+	<groupId>com.heanbian.block</groupId>
+	<artifactId>heanbian-kafka</artifactId>
+	<version>1.0.0</version>
 </dependency>
 ```
 
