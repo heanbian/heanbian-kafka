@@ -6,7 +6,7 @@
 
 	<groupId>com.heanbian.block</groupId>
 	<artifactId>heanbian-kafka</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 	<packaging>jar</packaging>
 
 	<name>heanbian-kafka</name>
@@ -166,7 +166,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jackson.version>2.12.1</jackson.version>
 		<kafka.clients.version>2.7.0</kafka.clients.version>
-		<spring-framework.version>5.3.3</spring-framework.version>
+		<spring-framework.version>5.3.4</spring-framework.version>
 		<arguments />
 	</properties>
 
